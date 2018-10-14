@@ -1,6 +1,7 @@
 #include "Triangle.h"
 #include <fstream>
 #include <vector>
+#include <ctime>
 
 struct Vertex
 {
@@ -8,7 +9,7 @@ struct Vertex
 	float r, g, b, a; //color
 };
 
-Triangle::Triangle(DX11Renderer & renderer, float xpos, float ypos, float zpos)
+Triangle::Triangle(DX11Renderer & renderer, float xpos, float ypos, float zpos, float rSpeed)
 {
 	Translation = DirectX::XMMatrixTranslation(xpos, ypos, zpos);
 
@@ -107,6 +108,8 @@ Triangle::Triangle(DX11Renderer & renderer, float xpos, float ypos, float zpos)
 
 	CreateShaders(renderer);
 
+	rotSpeed = rSpeed;
+
 }
 
 Triangle::~Triangle()
@@ -143,8 +146,6 @@ void Triangle::CreateShaders(DX11Renderer & renderer)
 
 void Triangle::Draw(DX11Renderer & renderer)
 {
-	Update();
-
 	///RENDER
 	WVP = renderer.getWVP();
 
@@ -179,20 +180,16 @@ void Triangle::Draw(DX11Renderer & renderer)
 
 void Triangle::Update()
 {
-	//Keep the cubes rotating
-	rotation += .0005f;
+	rotation += rotSpeed;
 	if (rotation > 6.26f)
 		rotation = 0.0f;
 
-	//Reset cube1World
 	world = DirectX::XMMatrixIdentity();
 
-	//Define cube1's world space matrix
 	DirectX::XMVECTOR rotaxis = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	Rotation = DirectX::XMMatrixRotationAxis(rotaxis, rotation);
 	//Translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 4.0f);
 
-	//Set cube1's world space using the transformations
 	world = Translation * Rotation;
 }
 

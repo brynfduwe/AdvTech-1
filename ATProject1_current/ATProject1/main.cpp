@@ -2,14 +2,16 @@
 #include "Window.h"
 #include "DX11Renderer.h"
 #include "Triangle.h"
+#include "Input.h"
 
 int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cmdCount)
 {
 	Window window(800, 500);
+	Input input(appInstance, window.getHandle(), 800, 500);
 	DX11Renderer renderer(window);
-	Triangle triangle(renderer, -3.0f, -3.0f, -3.0f);
-	Triangle triangle2(renderer, 0.0f, 0.0f, 0.0f);
-	Triangle triangle3(renderer, 3.0f, 3.0f, 3.0f);
+	Triangle triangle(renderer, -3.0f, -3.0f, -3.0f, -0.05f);
+	Triangle triangle2(renderer, 0.0f, 0.0f, 0.0f, 0.0f);
+	Triangle triangle3(renderer, 3.0f, 3.0f, 3.0f, 0.05f);
 
 	MSG msg = { 0 };
 	while (true)
@@ -63,19 +65,25 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 				}
 
 			}
+
+			if (msg.message == WM_LBUTTONDOWN)
+			{
+				input.Update();
+			}
 		}
 
 		//main loop - update and render
+		input.Update();
+
 		renderer.newFrame();
 
 		triangle.Update();
-		triangle.Update();
+		triangle2.Update();
 		triangle3.Update();
 
 		triangle.Draw(renderer);
 		triangle2.Draw(renderer);
 		triangle3.Draw(renderer);
-
 
 		renderer.endFrame(); 
 	}

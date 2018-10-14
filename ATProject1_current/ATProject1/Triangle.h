@@ -4,7 +4,7 @@
 class Triangle
 {
 public:
-	Triangle(DX11Renderer& renderer, float xpos, float ypos, float zpos);
+	Triangle(DX11Renderer& renderer, float xpos, float ypos, float zpos, float rSpeed);
 	~Triangle();
 
 	void CreateShaders(DX11Renderer& renderer);
@@ -33,4 +33,5 @@ private:
 	DirectX::XMMATRIX Scale;
 	DirectX::XMMATRIX Translation;
 	float rotation = 0.01f;
+	float rotSpeed;
 };
