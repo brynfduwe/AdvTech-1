@@ -14,6 +14,9 @@ public:
 
 	void Update();
 
+	int getMouseX();
+	int getMouseY();
+
 private:
 
 	IDirectInput8 * directInput;

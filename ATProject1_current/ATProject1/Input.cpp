@@ -53,11 +53,34 @@ void Input::Update()
 	mouseX += mouseState.lX;
 	mouseY += mouseState.lY;
 
-	// Ensure the mouse location doesn't exceed the screen width or height.
-	if (mouseX < 0) { mouseX = 0; }
-	if (mouseY < 0) { mouseY = 0; }
+	if(mouseX < 0) 
+	{ 
+		mouseX = 0; 
+	}
 
-	if (mouseX > screenWidth) { mouseX = screenWidth; }
-	if (mouseY > screenHeight) { mouseY = screenHeight; }
+	if(mouseY < 0)
+	{
+		mouseY = 0; 
+	}
 
+	if(mouseX > screenWidth)
+	{ 
+		mouseX = screenWidth; 
+	}
+
+	if(mouseY > screenHeight) 
+	{ 
+		mouseY = screenHeight; 
+	}
+
+}
+
+int Input::getMouseX()
+{
+	return mouseX;
+}
+
+int Input::getMouseY()
+{
+	return mouseY;
 }

@@ -114,10 +114,10 @@ Triangle::Triangle(DX11Renderer & renderer, float xpos, float ypos, float zpos, 
 
 Triangle::~Triangle()
 {
-	vertexBuffer->Release();
-	vertexShader->Release();
-	pixelShader->Release();
-	inputLayout->Release();
+	//vertexBuffer->Release();
+	//vertexShader->Release();
+	//pixelShader->Release();
+	//inputLayout->Release();
 }
 
 void Triangle::CreateShaders(DX11Renderer & renderer)
@@ -191,6 +191,11 @@ void Triangle::Update()
 	//Translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 4.0f);
 
 	world = Translation * Rotation;
+}
+
+void Triangle::SetNewPos(float x, float y, float z)
+{
+	Translation = DirectX::XMMatrixTranslation(x, y, 0);
 }
 
 void Triangle::ChangeColorRandom()

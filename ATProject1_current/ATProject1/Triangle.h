@@ -11,6 +11,7 @@ public:
 	void Draw(DX11Renderer& renderer);
 	void Update();
 
+	void SetNewPos(float x, float y, float z);
 	void ChangeColorRandom();
 
 private:

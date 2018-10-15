@@ -24,6 +24,10 @@ public:
 	void UpdateCamPosition(float x, float y, float z);
 
 	DirectX::XMMATRIX getWVP() { return WVP; };
+
+	DirectX::XMMATRIX getProjMatrix(DirectX::XMMATRIX& x) { camProjection = x; return camProjection; };
+	DirectX::XMMATRIX getViewMatrix() { return camView; };
+
 private:
 
 	struct cbPerObject
