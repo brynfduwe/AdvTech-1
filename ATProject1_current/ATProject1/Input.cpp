@@ -28,7 +28,7 @@ Input::~Input()
 {
 }
 
-void Input::Update()
+void Input::Update(HWND wnd)
 {
 	HRESULT result;
 
@@ -50,8 +50,15 @@ void Input::Update()
 		}
 	}
 
-	mouseX += mouseState.lX;
-	mouseY += mouseState.lY;
+	//mouseX += mouseState.lX;
+	//mouseY += mouseState.lY;
+
+	POINT p;
+	GetCursorPos(&p);
+	ScreenToClient(wnd, &p);
+	
+	mouseX = p.x;
+	mouseY = p.y;
 
 	if(mouseX < 0) 
 	{ 

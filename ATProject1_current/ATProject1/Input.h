@@ -12,7 +12,7 @@ public:
 	Input(HINSTANCE, HWND, int, int);
 	~Input();
 
-	void Update();
+	void Update(HWND wnd);
 
 	int getMouseX();
 	int getMouseY();
@@ -28,5 +28,4 @@ private:
 
 	int screenWidth, screenHeight;
 	int mouseX, mouseY;
-
 };

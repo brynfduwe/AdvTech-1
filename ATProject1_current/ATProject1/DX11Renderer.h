@@ -25,7 +25,7 @@ public:
 
 	DirectX::XMMATRIX getWVP() { return WVP; };
 
-	DirectX::XMMATRIX getProjMatrix(DirectX::XMMATRIX& x) { camProjection = x; return camProjection; };
+	DirectX::XMMATRIX getProjMatrix() { return camProjection; };
 	DirectX::XMMATRIX getViewMatrix() { return camView; };
 
 private:

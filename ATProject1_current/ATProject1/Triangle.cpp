@@ -3,12 +3,6 @@
 #include <vector>
 #include <ctime>
 
-struct Vertex
-{
-	float x, y, z; // pos
-	float r, g, b, a; //color
-};
-
 Triangle::Triangle(DX11Renderer & renderer, float xpos, float ypos, float zpos, float rSpeed)
 {
 	Translation = DirectX::XMMatrixTranslation(xpos, ypos, zpos);
@@ -30,6 +24,15 @@ Triangle::Triangle(DX11Renderer & renderer, float xpos, float ypos, float zpos, 
 	{ +1.0f,  +1.0f,  +1.0f, 0.0f, 1.0f, 0.0f, 1.0f },
 	{ +1.0f, -1.0f,  +1.0f, 0.0f, 0.0f, 1.0f, 1.0f },
 	};
+
+	for (int i = 0; i < 8; i++)
+	{
+		DirectX::XMFLOAT3 V;
+		V.x = verticies[i].x;
+		V.y = verticies[i].y;
+		V.z = verticies[i].z;
+		verticiesArray.push_back(V);
+	}
 
 
 	unsigned short indices[] = {
@@ -57,6 +60,11 @@ Triangle::Triangle(DX11Renderer & renderer, float xpos, float ypos, float zpos, 
 		4, 0, 3,
 		4, 3, 7
 	};
+
+	for (int i = 0; i < 36; i++)
+	{
+		indicesArray.push_back(indices[i]);
+	}
 
 //	ChangeColorRandom();
 
@@ -146,34 +154,37 @@ void Triangle::CreateShaders(DX11Renderer & renderer)
 
 void Triangle::Draw(DX11Renderer & renderer)
 {
-	///RENDER
-	WVP = renderer.getWVP();
+	if (!hide)
+	{
+		///RENDER
+		WVP = renderer.getWVP();
 
-	renderer.getDeviceContex()->UpdateSubresource(WVP_buffer, 0, nullptr, &WVP, 0, 0);
+		renderer.getDeviceContex()->UpdateSubresource(WVP_buffer, 0, nullptr, &WVP, 0, 0);
 
-	renderer.getDeviceContex()->ClearDepthStencilView(renderer.getDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		renderer.getDeviceContex()->ClearDepthStencilView(renderer.getDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	renderer.setRenderTargets();
-	
-	//bind shaders
-	renderer.getDeviceContex()->IASetInputLayout(inputLayout);
-	renderer.getDeviceContex()->VSSetShader(vertexShader, nullptr, 0);
-	renderer.getDeviceContex()->PSSetShader(pixelShader, nullptr, 0);
+		renderer.setRenderTargets();
 
-	//bind vertex buffer - one bind allows it to be rendered over and over, saves memory
-	UINT vStride = sizeof(Vertex);
-	UINT offset = 0;
-	renderer.getDeviceContex()->IASetVertexBuffers(0, 1, &vertexBuffer, &vStride, &offset);
+		//bind shaders
+		renderer.getDeviceContex()->IASetInputLayout(inputLayout);
+		renderer.getDeviceContex()->VSSetShader(vertexShader, nullptr, 0);
+		renderer.getDeviceContex()->PSSetShader(pixelShader, nullptr, 0);
 
-	//input assembler stage
-	renderer.getDeviceContex()->IASetIndexBuffer(squareIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
-	renderer.getDeviceContex()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	renderer.getDeviceContex()->VSSetConstantBuffers(0, 1, &WVP_buffer);
+		//bind vertex buffer - one bind allows it to be rendered over and over, saves memory
+		UINT vStride = sizeof(Vertex);
+		UINT offset = 0;
+		renderer.getDeviceContex()->IASetVertexBuffers(0, 1, &vertexBuffer, &vStride, &offset);
 
-	renderer.setObjWVP(world);
+		//input assembler stage
+		renderer.getDeviceContex()->IASetIndexBuffer(squareIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+		renderer.getDeviceContex()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		renderer.getDeviceContex()->VSSetConstantBuffers(0, 1, &WVP_buffer);
 
-	renderer.getDeviceContex()->DrawIndexed(36, 0, 0);
-	//renderer.getDeviceContex()->Draw(8, 0);
+		renderer.setObjWVP(world);
+
+		renderer.getDeviceContex()->DrawIndexed(36, 0, 0);
+		//renderer.getDeviceContex()->Draw(8, 0);
+	}
 
 }
 
@@ -195,7 +206,7 @@ void Triangle::Update()
 
 void Triangle::SetNewPos(float x, float y, float z)
 {
-	Translation = DirectX::XMMatrixTranslation(x, y, 0);
+	Translation = DirectX::XMMatrixTranslation(x, y, z);
 }
 
 void Triangle::ChangeColorRandom()

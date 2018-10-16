@@ -1,5 +1,12 @@
 #pragma once
 #include "DX11Renderer.h"
+#include <vector>
+
+struct Vertex
+{
+	float x, y, z; // pos
+	float r, g, b, a; //color
+};
 
 class Triangle
 {
@@ -13,6 +20,31 @@ public:
 
 	void SetNewPos(float x, float y, float z);
 	void ChangeColorRandom();
+
+	void TempSetPosMatrix(DirectX::XMVECTOR X)
+	{
+		Translation = DirectX::XMMatrixTranslationFromVector(X);
+	};
+
+	std::vector<DirectX::XMFLOAT3> getVericies()
+	{
+		return verticiesArray;
+	};
+
+	std::vector<unsigned short> getIndicies()
+	{
+		return indicesArray;
+	};
+	
+	DirectX::XMMATRIX getObjWorld()
+	{
+		return world;
+	}
+
+	void hideObj()
+	{
+		hide = true;
+	}
 
 private:
 
@@ -35,4 +67,11 @@ private:
 	DirectX::XMMATRIX Translation;
 	float rotation = 0.01f;
 	float rotSpeed;
+
+	std::vector<unsigned short> indicesArray;
+
+	std::vector<DirectX::XMFLOAT3> verticiesArray;
+
+	bool hide;
+
 };
