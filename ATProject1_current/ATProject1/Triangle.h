@@ -18,7 +18,7 @@ public:
 	void Draw(DX11Renderer& renderer);
 	void Update();
 
-	void SetNewPos(float x, float y, float z);
+	void SetNewPos(float x, float y, float z, bool changeY);
 	void ChangeColorRandom();
 
 	void TempSetPosMatrix(DirectX::XMVECTOR X)
@@ -45,6 +45,10 @@ public:
 	{
 		hide = true;
 	}
+
+	float getX() { return x; };
+	float getY() { return y; };
+	float getZ() { return z; };
 
 private:
 
@@ -73,5 +77,9 @@ private:
 	std::vector<DirectX::XMFLOAT3> verticiesArray;
 
 	bool hide;
+
+	float x;
+	float y;
+	float z;
 
 };

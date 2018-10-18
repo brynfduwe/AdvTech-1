@@ -151,26 +151,29 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 	DX11Renderer renderer(window);
 	std::vector<Triangle> allObjects;
 
-	//std::vector<Triangle> floor;
-	//float x = -10;
-	//float z = -10;
-	//for (int rz = 0; rz < 10; rz++)
-	//{
-	//	x = 0;
-	//	for (int cx = 0; cx < 10; cx++)
-	//	{
-	//		Triangle t(renderer, x, -2.0f, z, 0.0f);
-	//		floor.push_back(t);
-	//		x += 2;
-	//	}
-	//	z += 2;
-	//}
+	std::vector<Triangle> floor;
+	float x = -10;
+	float z = -10;
+	for (int rz = 0; rz < 10; rz++)
+	{
+		x = 0;
+		for (int cx = 0; cx < 10; cx++)
+		{
+			Triangle t(renderer, x, -2.0f, z, 0.0f);
+			floor.push_back(t);
+			x += 2;
+		}
+		z += 2;
+	}
 
-	Triangle triangle(renderer, -6.0f, 6.0f, -6.0f, -0.05f);
+	int selected;
+	int moveToSpace;
+
+	Triangle triangle(renderer, -6.0f, 6.0f, -6.0f, 0.0f);
 	allObjects.push_back(triangle);
 	Triangle triangle2(renderer, 0.0f, 0.0f, 0.0f, 0.0f);
 	allObjects.push_back(triangle2);
-	Triangle triangle3(renderer, 3.0f, 3.0f, 3.0f, 0.05f);
+	Triangle triangle3(renderer, 3.0f, 3.0f, 3.0f, 0.0f);
 	allObjects.push_back(triangle3);
 
 	MSG msg = { 0 };
@@ -233,13 +236,36 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 				DirectX::XMVECTOR prwsPos, prwsDir;
 				pickRay(prwsPos, prwsDir, renderer, input);
 
+				bool pickedThisFrame = false;
+
 				for (int i = 0; i < 3; i++)
 				{
 					if (objRayCollisionCheck(allObjects[i].getIndicies(), allObjects[i].getVericies(), allObjects[i].getObjWorld(), prwsPos, prwsDir))
 					{
-						allObjects[i].hideObj();
+						//allObjects[i].hideObj();
+						selected = i;
+						pickedThisFrame = true;
 					}
 				}
+
+				if (selected > -1 && !pickedThisFrame)
+				{
+					for (int i = 0; i < floor.size(); i++)
+					{
+						if (objRayCollisionCheck(floor[i].getIndicies(), floor[i].getVericies(), floor[i].getObjWorld(), prwsPos, prwsDir))
+						{
+							if (selected > -1)
+							{
+								//floor[i].hideObj();
+								moveToSpace = i;
+								allObjects[selected].SetNewPos(floor[moveToSpace].getX(), 0, floor[moveToSpace].getZ(), false);
+							}
+							selected = -1;
+							moveToSpace = -1;
+						}
+					}
+				}
+
 			
 		
 			//	triangle2.TempSetPosMatrix(pickRayInViewSpacePos);
@@ -252,12 +278,6 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 
 		renderer.newFrame();
 
-		//for (int i = 0; i < 100; i++)
-		//{
-		//	floor[i].Update();
-		//	floor[i].Draw(renderer);
-		//}
-
 		//triangle.Update();
 		//triangle2.Update();
 		//triangle3.Update();
@@ -265,6 +285,12 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 		//triangle.Draw(renderer);
 		//triangle2.Draw(renderer);
 		//triangle3.Draw(renderer);
+
+		for (int i = 0; i < 100; i++)
+		{
+			floor[i].Update();
+			floor[i].Draw(renderer);
+		}
 
 		for (int i = 0; i < 3; i++)
 		{

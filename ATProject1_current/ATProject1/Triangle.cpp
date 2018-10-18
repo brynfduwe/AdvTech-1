@@ -6,6 +6,9 @@
 Triangle::Triangle(DX11Renderer & renderer, float xpos, float ypos, float zpos, float rSpeed)
 {
 	Translation = DirectX::XMMatrixTranslation(xpos, ypos, zpos);
+	x = xpos;
+	y = ypos;
+	z = zpos;
 
 	//window
 	//-1, 1   0, 1,   1, 1
@@ -204,8 +207,13 @@ void Triangle::Update()
 	world = Translation * Rotation;
 }
 
-void Triangle::SetNewPos(float x, float y, float z)
+void Triangle::SetNewPos(float xPos, float yPos, float zPos, bool changeY)
 {
+	x = xPos;
+	if(changeY)
+		y = yPos;
+	z = zPos;
+
 	Translation = DirectX::XMMatrixTranslation(x, y, z);
 }
 
