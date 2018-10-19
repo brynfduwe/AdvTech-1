@@ -154,12 +154,13 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 	std::vector<Triangle> floor;
 	float x = -10;
 	float z = -10;
-	for (int rz = 0; rz < 10; rz++)
+	for (int rz = 0; rz < 15; rz++)
 	{
 		x = 0;
-		for (int cx = 0; cx < 10; cx++)
+		for (int cx = 0; cx < 15; cx++)
 		{
 			Triangle t(renderer, x, -2.0f, z, 0.0f);
+			t.ChangeColorRandom(renderer);
 			floor.push_back(t);
 			x += 2;
 		}
@@ -286,7 +287,7 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 		//triangle2.Draw(renderer);
 		//triangle3.Draw(renderer);
 
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < floor.size(); i++)
 		{
 			floor[i].Update();
 			floor[i].Draw(renderer);

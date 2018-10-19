@@ -19,7 +19,7 @@ public:
 	void Update();
 
 	void SetNewPos(float x, float y, float z, bool changeY);
-	void ChangeColorRandom();
+	void ChangeColorRandom(DX11Renderer& renderer);
 
 	void TempSetPosMatrix(DirectX::XMVECTOR X)
 	{
@@ -81,5 +81,8 @@ private:
 	float x;
 	float y;
 	float z;
+
+	DirectX::XMFLOAT3 moveToPos;
+	bool moving;
 
 };
