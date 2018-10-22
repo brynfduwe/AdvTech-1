@@ -119,6 +119,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DX11Renderer.cpp" />
+    <ClCompile Include="GridSpace.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Triangle.cpp" />
@@ -126,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX11Renderer.h" />
+    <ClInclude Include="GridSpace.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Window.h" />

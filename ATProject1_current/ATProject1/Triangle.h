@@ -19,7 +19,8 @@ public:
 	void Update();
 
 	void SetNewPos(float x, float y, float z, bool changeY);
-	void ChangeColorRandom(DX11Renderer& renderer);
+
+	void SetPathList(std::vector<DirectX::XMFLOAT3> positionList);
 
 	void TempSetPosMatrix(DirectX::XMVECTOR X)
 	{
@@ -84,5 +85,10 @@ private:
 
 	DirectX::XMFLOAT3 moveToPos;
 	bool moving;
+	float lerpTimer;
+
+	std::vector<DirectX::XMFLOAT3> pathList;
+	DirectX::XMFLOAT3 currentMoveTo;
+	int pathIter;
 
 };

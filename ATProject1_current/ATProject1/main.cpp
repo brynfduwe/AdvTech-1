@@ -3,6 +3,7 @@
 #include "DX11Renderer.h"
 #include "Triangle.h"
 #include "Input.h"
+#include "GridSpace.h"
 #include <vector>
 #include <DirectXMath.h>
 
@@ -67,8 +68,6 @@ bool objRayCollisionCheck(std::vector<unsigned short> indicesArray, std::vector<
 
 		U = DirectX::XMVectorSubtract(tri1V2, tri1V1);
 		V = DirectX::XMVectorSubtract(tri1V3, tri1V1);
-		//	U = tri1V2 - tri1V1;
-		//	V = tri1V3 - tri1V1;
 
 		//Compute face normal by crossing U, V
 		faceNormal = DirectX::XMVector3Cross(U, V);
@@ -96,7 +95,7 @@ bool objRayCollisionCheck(std::vector<unsigned short> indicesArray, std::vector<
 		if (ep2 != 0.0f)
 			t = -(ep1 + tri1D) / (ep2);
 
-		if (t > 0.0f)    //Make sure you don't pick objects behind the camera
+		if (t > 0.0f)
 		{
 			//Get the point on the plane
 			planeIntersectX = DirectX::XMVectorGetX(prwsPos) + DirectX::XMVectorGetX(prwsDir) * t;
@@ -105,13 +104,6 @@ bool objRayCollisionCheck(std::vector<unsigned short> indicesArray, std::vector<
 
 			pointInPlane = DirectX::XMVectorSet(planeIntersectX, planeIntersectY, planeIntersectZ, 0.0f);
 
-			//Call function to check if point is in the triangle
-			//if (PointInTriangle(tri1V1, tri1V2, tri1V3, pointInPlane))
-			//{
-			//Return the distance to the hit, so you can check all the other pickable objects in your scene
-			//and choose whichever object is closest to the camera
-			//		return t / 2.0f;
-			//	}
 			tDist = 1000;
 
 			DirectX::XMVECTOR cp1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V3, tri1V2), DirectX::XMVectorSubtract(pointInPlane, tri1V2));
@@ -151,7 +143,7 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 	DX11Renderer renderer(window);
 	std::vector<Triangle> allObjects;
 
-	std::vector<Triangle> floor;
+	std::vector<GridSpace> floor;
 	float x = -10;
 	float z = -10;
 	for (int rz = 0; rz < 15; rz++)
@@ -159,9 +151,19 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 		x = 0;
 		for (int cx = 0; cx < 15; cx++)
 		{
-			Triangle t(renderer, x, -2.0f, z, 0.0f);
-			t.ChangeColorRandom(renderer);
-			floor.push_back(t);
+			if ((cx == 5 && rz == 7) || (cx == 6 && rz == 7) || (cx == 7 && rz == 7) || (cx == 8 && rz == 7) || (cx == 9 && rz == 7) 
+				|| (cx == 5 && rz == 8) || (cx == 6 && rz == 8) || (cx == 7 && rz == 8) || (cx == 8 && rz == 8) || (cx == 9 && rz == 8)
+					|| (cx == 5 && rz == 9) || (cx == 6 && rz == 9) || (cx == 7 && rz == 9) || (cx == 8 && rz == 9) || (cx == 9 && rz == 9)
+						|| (cx == 5 && rz == 3) || (cx == 6 && rz == 3) || (cx == 7 && rz == 3) || (cx == 5 && rz == 4) || (cx == 6 && rz == 4) || (cx == 7 && rz == 4))
+			{
+				GridSpace gs(renderer, x, -2.0f, z, 0.0f, true);
+				floor.push_back(gs);
+			}
+			else
+			{
+				GridSpace gs(renderer, x, -2.0f, z, 0.0f, false);
+				floor.push_back(gs);
+			}
 			x += 2;
 		}
 		z += 2;
@@ -170,12 +172,12 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 	int selected;
 	int moveToSpace;
 
-	Triangle triangle(renderer, -6.0f, 6.0f, -6.0f, 0.0f);
-	allObjects.push_back(triangle);
-	Triangle triangle2(renderer, 0.0f, 0.0f, 0.0f, 0.0f);
-	allObjects.push_back(triangle2);
-	Triangle triangle3(renderer, 3.0f, 3.0f, 3.0f, 0.0f);
-	allObjects.push_back(triangle3);
+	for (int i = 0; i < 10; i++)
+	{
+		Triangle triangle(renderer, 0.0f, 0.0f, i * 3, 0.0f);
+		allObjects.push_back(triangle);
+	}
+
 
 	MSG msg = { 0 };
 	while (true)
@@ -194,7 +196,7 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 				{
 					renderer.UpdateCamPosition(0, 0, -0.5f);
 				}
-				
+
 				if (msg.wParam == 'e')
 				{
 					renderer.UpdateCamPosition(0, 0, 0.5f);
@@ -239,7 +241,7 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 
 				bool pickedThisFrame = false;
 
-				for (int i = 0; i < 3; i++)
+				for (int i = 0; i < allObjects.size(); i++)
 				{
 					if (objRayCollisionCheck(allObjects[i].getIndicies(), allObjects[i].getVericies(), allObjects[i].getObjWorld(), prwsPos, prwsDir))
 					{
@@ -259,33 +261,98 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 							{
 								//floor[i].hideObj();
 								moveToSpace = i;
-								allObjects[selected].SetNewPos(floor[moveToSpace].getX(), 0, floor[moveToSpace].getZ(), false);
+
+								GridSpace startSpace = floor[0];
+								GridSpace targetSpace = floor[0];
+
+								DirectX::XMFLOAT3 origin = DirectX::XMFLOAT3(allObjects[selected].getX(), allObjects[selected].getY(), allObjects[selected].getZ());
+								DirectX::XMFLOAT3 target = DirectX::XMFLOAT3(floor[moveToSpace].getX(), floor[moveToSpace].getY(), floor[moveToSpace].getZ());
+
+								//update move costs
+								for (int i = 0; i < floor.size(); i++)
+								{
+									floor[i].SetDists(origin, target);
+								}
+
+								for (int i = 0; i < floor.size(); i++)
+								{
+									if(floor[i].getOriginDist() < startSpace.getOriginDist())
+									startSpace = floor[i];
+
+									if (floor[i].getEndDist() < targetSpace.getEndDist())
+										targetSpace = floor[i];
+								}
+
+								bool endFound = false;
+								int loops = 0;
+								GridSpace nearSpace = startSpace;
+
+								std::vector<DirectX::XMFLOAT3> pathList;
+								std::vector<GridSpace> neighbors;
+								
+								pathList.push_back(DirectX::XMFLOAT3(startSpace.getX(), startSpace.getY(), startSpace.getZ()));
+
+								while (!endFound)
+								{
+									neighbors.clear();
+									//get neighbors
+									for (int i = 0; i < floor.size(); i++)
+									{
+										int distX = (floor[i].getX() - nearSpace.getX()) * (floor[i].getX() - nearSpace.getX());
+										int distZ = (floor[i].getZ() - nearSpace.getZ()) * (floor[i].getZ() - nearSpace.getZ());
+										float dist = (sqrt(distX + distZ));
+
+										if (dist < 2.5f && floor[i].getIsObstacle() == false)
+											neighbors.push_back(floor[i]);
+
+									}
+
+									//A*
+									for (int i = 0; i < neighbors.size(); i++)
+									{
+										if (neighbors[i].getEndDist() < nearSpace.getEndDist())
+										{
+											nearSpace = neighbors[i];
+											pathList.push_back(DirectX::XMFLOAT3(nearSpace.getX(), nearSpace.getY(), nearSpace.getZ()));
+										}
+
+										if ((neighbors[i].getX() == floor[moveToSpace].getX() && neighbors[i].getZ() == floor[moveToSpace].getZ()) || loops > 1000)
+										{
+											endFound = true;
+											break;
+										}
+									}
+
+									if (endFound)
+									{
+										break;
+									}
+
+									loops++;
+								}
+
+								//add final space to list;
+								pathList.push_back(target);
+
+								//send list to unit
+								if (loops < 1000)
+								allObjects[selected].SetPathList(pathList);
+
+								// allObjects[selected].SetNewPos(pathList[pathList.size() - 1].x, 0, pathList[pathList.size() - 1].z, false);
+							//	allObjects[selected].SetNewPos(floor[moveToSpace].getX(), 0, floor[moveToSpace].getZ(), false);
 							}
 							selected = -1;
 							moveToSpace = -1;
 						}
 					}
 				}
-
-			
-		
-			//	triangle2.TempSetPosMatrix(pickRayInViewSpacePos);
-				////PART 2
-			} // exit input
+			}
 		}
-
+	
+		// exit input	
 		//main loop - update and render
-		//input.Update(window);
 
 		renderer.newFrame();
-
-		//triangle.Update();
-		//triangle2.Update();
-		//triangle3.Update();
-
-		//triangle.Draw(renderer);
-		//triangle2.Draw(renderer);
-		//triangle3.Draw(renderer);
 
 		for (int i = 0; i < floor.size(); i++)
 		{
@@ -293,7 +360,7 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 			floor[i].Draw(renderer);
 		}
 
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < allObjects.size(); i++)
 		{
 			allObjects[i].Update();
 			allObjects[i].Draw(renderer);
