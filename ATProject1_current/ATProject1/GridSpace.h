@@ -21,6 +21,10 @@ public:
 	void SetNewPos(float x, float y, float z, bool changeY);
 	void SetDists(DirectX::XMFLOAT3 origin, DirectX::XMFLOAT3 target);
 
+	void HighlightObject(DX11Renderer & renderer);
+
+	void UnHighlightObject(DX11Renderer & renderer);
+
 	float GetTotalDist()
 	{
 		return (originDist + endDist);
@@ -59,6 +63,8 @@ public:
 	float getEndDist() { return endDist; };
 
 	bool getIsObstacle() { return Obstacle; };
+	bool getIsStoodOn() { return StoodOn; };
+	void setStoodOn(bool set) { StoodOn = set; };
 
 private:
 
@@ -99,5 +105,8 @@ private:
 	float endDist;
 
 	bool Obstacle;
+	bool StoodOn;
+
+	bool highlighted;
 
 };

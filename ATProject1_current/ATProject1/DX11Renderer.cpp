@@ -136,21 +136,21 @@ void DX11Renderer::CreateRenderTarget()
 
 	DeviceContex->RSSetViewports(1, &viewport);
 
-	//consant buffer
-	D3D11_BUFFER_DESC cbbd;
-	ZeroMemory(&cbbd, sizeof(D3D11_BUFFER_DESC));
+	//constant buffer
+	D3D11_BUFFER_DESC consantBuffer;
+	ZeroMemory(&consantBuffer, sizeof(D3D11_BUFFER_DESC));
 
-	cbbd.Usage = D3D11_USAGE_DEFAULT;
-	cbbd.ByteWidth = sizeof(cbPerObject);
-	cbbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbbd.CPUAccessFlags = 0;
-	cbbd.MiscFlags = 0;
+	consantBuffer.Usage = D3D11_USAGE_DEFAULT;
+	consantBuffer.ByteWidth = sizeof(cbPerObject);
+	consantBuffer.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	consantBuffer.CPUAccessFlags = 0;
+	consantBuffer.MiscFlags = 0;
 
-	Device->CreateBuffer(&cbbd, NULL, &cbPerObjectBuffer);
+	Device->CreateBuffer(&consantBuffer, NULL, &cbPerObjectBuffer);
 
 	//Camera
-	camPosition = DirectX::XMVectorSet(0.0f, 2.5f, -10.0f, 0.0f);
-	camTarget = DirectX::XMVectorSet(0.0f, 0.01f, 0.0f, 0.0f);
+	camPosition = DirectX::XMVectorSet(10.0f, 25, -17.0f, 0.0f);
+	camTarget = DirectX::XMVectorSet(0.0f, -10.0f, 0.0f, 0.0f);
 	camUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	//View matrix

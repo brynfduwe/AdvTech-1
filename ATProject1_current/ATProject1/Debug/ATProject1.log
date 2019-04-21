@@ -1,3 +1,9 @@
-﻿  Triangle.cpp
-c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\triangle.cpp(220): warning C4018: '<': signed/unsigned mismatch
+﻿  Model.cpp
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\model.cpp(225): warning C4018: '<': signed/unsigned mismatch
+  DX11Renderer.cpp
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  Game.cpp
+  main.cpp
+  GridSpace.cpp
   ATProject1.vcxproj -> C:\Users\Bryn\Documents\Bryn\Bryn UWE\Year 3\AT\AT1\AdvTech-1\ATProject1_current\Debug\ATProject1.exe

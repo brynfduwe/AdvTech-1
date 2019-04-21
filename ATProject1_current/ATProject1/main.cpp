@@ -1,11 +1,12 @@
 #include <Windows.h>
 #include "Window.h"
 #include "DX11Renderer.h"
-#include "Triangle.h"
+#include "Model.h"
 #include "Input.h"
 #include "GridSpace.h"
 #include <vector>
 #include <DirectXMath.h>
+#include <string>
 
 void pickRay(DirectX::XMVECTOR& pickRayInWorldSpacePos, DirectX::XMVECTOR& pickRayInWorldSpaceDir, DX11Renderer r, Input i)
 {
@@ -141,9 +142,29 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 	Window window(800, 500);
 	Input input(appInstance, window.getHandle(), 800, 500);
 	DX11Renderer renderer(window);
-	std::vector<Triangle> allObjects;
+	std::vector<Model> allObjects;
 
 	std::vector<GridSpace> floor;
+
+	int levelLayout[] = 
+	{
+		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+		1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
+		1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
+		1,1,0,0,1,1,1,1,1,1,1,0,0,1,1,
+		1,1,0,0,1,1,1,1,1,1,1,0,0,1,1,
+		1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,
+		1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,
+		1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,
+		1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,
+		1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,
+		1,1,0,0,1,1,1,1,1,1,1,0,0,1,1,
+		1,1,0,0,1,1,1,1,1,1,1,0,0,1,1,
+		1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
+		1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,
+		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	};
+
 	float x = -10;
 	float z = -10;
 	for (int rz = 0; rz < 15; rz++)
@@ -151,10 +172,7 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 		x = 0;
 		for (int cx = 0; cx < 15; cx++)
 		{
-			if ((cx == 5 && rz == 7) || (cx == 6 && rz == 7) || (cx == 7 && rz == 7) || (cx == 8 && rz == 7) || (cx == 9 && rz == 7) 
-				|| (cx == 5 && rz == 8) || (cx == 6 && rz == 8) || (cx == 7 && rz == 8) || (cx == 8 && rz == 8) || (cx == 9 && rz == 8)
-					|| (cx == 5 && rz == 9) || (cx == 6 && rz == 9) || (cx == 7 && rz == 9) || (cx == 8 && rz == 9) || (cx == 9 && rz == 9)
-						|| (cx == 5 && rz == 3) || (cx == 6 && rz == 3) || (cx == 7 && rz == 3) || (cx == 5 && rz == 4) || (cx == 6 && rz == 4) || (cx == 7 && rz == 4))
+			if(levelLayout[rz * 15 + cx] == 0)
 			{
 				GridSpace gs(renderer, x, -2.0f, z, 0.0f, true);
 				floor.push_back(gs);
@@ -172,9 +190,9 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 	int selected;
 	int moveToSpace;
 
-	for (int i = 0; i < 10; i++)
+	for (int i = -5; i < 10; i += 2)
 	{
-		Triangle triangle(renderer, 0.0f, 0.0f, i * 3, 0.0f);
+		Model triangle(renderer, 0.0f, 0.0f, i * 2, 0.0f);
 		allObjects.push_back(triangle);
 	}
 
@@ -234,20 +252,34 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 
 			if (msg.message == WM_LBUTTONDOWN)
 			{
-				input.Update(window.getHandle());
+				//update
+				for (int i = 0; i < floor.size(); i++)
+				{
+					floor[i].setStoodOn(false);
+				}
 
+				for (int i = 0; i < allObjects.size(); i++)
+				{
+					if (allObjects[i].getStandingSpace() > -1)
+					{
+						floor[allObjects[i].getStandingSpace()].setStoodOn(true);
+					}
+				}
+
+				//raypicking and oject/grid select
+				input.Update(window.getHandle());
 				DirectX::XMVECTOR prwsPos, prwsDir;
 				pickRay(prwsPos, prwsDir, renderer, input);
-
 				bool pickedThisFrame = false;
 
 				for (int i = 0; i < allObjects.size(); i++)
 				{
-					if (objRayCollisionCheck(allObjects[i].getIndicies(), allObjects[i].getVericies(), allObjects[i].getObjWorld(), prwsPos, prwsDir))
+					if (objRayCollisionCheck(allObjects[i].getIndicies(), allObjects[i].getVericies(), allObjects[i].getObjWorld(), prwsPos, prwsDir) && pickedThisFrame == false)
 					{
 						//allObjects[i].hideObj();
 						selected = i;
-						pickedThisFrame = true;
+						pickedThisFrame = true;		
+						allObjects[i].SetSelect(true);
 					}
 				}
 
@@ -255,10 +287,17 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 				{
 					for (int i = 0; i < floor.size(); i++)
 					{
-						if (objRayCollisionCheck(floor[i].getIndicies(), floor[i].getVericies(), floor[i].getObjWorld(), prwsPos, prwsDir))
+						if (objRayCollisionCheck(floor[i].getIndicies(), floor[i].getVericies(), floor[i].getObjWorld(), prwsPos, prwsDir) && pickedThisFrame == false)
 						{
 							if (selected > -1)
-							{
+							{	
+								pickedThisFrame = true;
+
+								allObjects[selected].SetSelect(false);
+								allObjects[selected].UnHighlightObject(renderer);
+								floor[i].UnHighlightObject(renderer);
+								
+
 								//floor[i].hideObj();
 								moveToSpace = i;
 
@@ -289,12 +328,14 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 
 								std::vector<DirectX::XMFLOAT3> pathList;
 								std::vector<GridSpace> neighbors;
+								std::vector<int> stoodUpon;
 								
 								pathList.push_back(DirectX::XMFLOAT3(startSpace.getX(), startSpace.getY(), startSpace.getZ()));
 
 								while (!endFound)
 								{
 									neighbors.clear();
+									stoodUpon.clear();
 									//get neighbors
 									for (int i = 0; i < floor.size(); i++)
 									{
@@ -302,8 +343,11 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 										int distZ = (floor[i].getZ() - nearSpace.getZ()) * (floor[i].getZ() - nearSpace.getZ());
 										float dist = (sqrt(distX + distZ));
 
-										if (dist < 2.5f && floor[i].getIsObstacle() == false)
+										if (dist < 3.0f && floor[i].getIsObstacle() == false && floor[i].getIsStoodOn() == false)
+										{
 											neighbors.push_back(floor[i]);
+											stoodUpon.push_back(i);
+										}
 
 									}
 
@@ -319,6 +363,10 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 										if ((neighbors[i].getX() == floor[moveToSpace].getX() && neighbors[i].getZ() == floor[moveToSpace].getZ()) || loops > 1000)
 										{
 											endFound = true;
+
+											if(loops <= 1000)
+												allObjects[selected].setStandingSpace(stoodUpon[i]);
+
 											break;
 										}
 									}
@@ -343,6 +391,57 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 							}
 							selected = -1;
 							moveToSpace = -1;
+						}
+					}
+
+					for (int i = 0; i < allObjects.size(); i++)
+					{
+
+						allObjects[i].UnHighlightObject(renderer);
+					}
+				}
+			}
+			else
+			{
+
+				//raypicking and oject/grid select
+				input.Update(window.getHandle());
+				DirectX::XMVECTOR prwsPos, prwsDir;
+				pickRay(prwsPos, prwsDir, renderer, input);
+				bool pickedThisFrame = false;
+
+				if (selected < 0)
+				{
+					bool highlighted = false;
+					for (int i = 0; i < allObjects.size(); i++)
+					{
+						if (objRayCollisionCheck(allObjects[i].getIndicies(), allObjects[i].getVericies(), allObjects[i].getObjWorld(), prwsPos, prwsDir) && highlighted == false)
+						{
+							highlighted = true;
+							//allObjects[i].hideObj();
+							allObjects[i].HighlightObject(renderer);
+						}
+						else
+						{
+							allObjects[i].UnHighlightObject(renderer);
+						}
+					}
+				}
+
+				if (selected > -1)
+				{
+					bool highlighted = false;
+					for (int i = 0; i < floor.size(); i++)
+					{
+						if (objRayCollisionCheck(floor[i].getIndicies(), floor[i].getVericies(), floor[i].getObjWorld(), prwsPos, prwsDir) && highlighted == false)
+						{
+							highlighted = true;
+							//allObjects[i].hideObj();
+							floor[i].HighlightObject(renderer);
+						}
+						else
+						{
+							floor[i].UnHighlightObject(renderer);
 						}
 					}
 				}

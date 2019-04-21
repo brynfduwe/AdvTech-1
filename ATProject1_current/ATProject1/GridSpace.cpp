@@ -5,6 +5,7 @@
 
 GridSpace::GridSpace(DX11Renderer & renderer, float xpos, float ypos, float zpos, float rSpeed, bool obstacle)
 {
+	highlighted = false;
 	float yNew = ypos;
 
 	if (obstacle)
@@ -12,6 +13,8 @@ GridSpace::GridSpace(DX11Renderer & renderer, float xpos, float ypos, float zpos
 		Obstacle = true;
 		yNew += 2;
 	}
+	StoodOn = false;
+
 	Translation = DirectX::XMMatrixTranslation(xpos, yNew, zpos);
 	x = xpos;
 	y = yNew;
@@ -259,3 +262,137 @@ void GridSpace::SetDists(DirectX::XMFLOAT3 origin, DirectX::XMFLOAT3 target)
 	endDist = (sqrt(distX + distZ));
 }
 
+void GridSpace::HighlightObject(DX11Renderer & renderer)
+{
+	if (highlighted == false)
+	{
+		highlighted = true;
+
+		verticiesArray.clear();
+
+		float r = 0;
+		float g = 1;
+		float b = 0;
+
+		//most basic of geometry
+		Vertex verticies[] =
+		{
+			{ -1.0f, -1.0f, -1.0f, r, g, b, 1.0f },
+		{ -1.0f,  +1.0f, -1.0f, r, g, b, 1.0f },
+		{ +1.0f,  +1.0f, -1.0f, r, g, b, 1.0f },
+		{ +1.0f, -1.0f, -1.0f, r, g, b, 1.0f },
+		{ -1.0f, -1.0f,  +1.0f, r, g, b, 1.0f },
+		{ -1.0f,  +1.0f, +1.0f, r, g, b, 1.0f },
+		{ +1.0f,  +1.0f,  +1.0f, r, g, b, 1.0f },
+		{ +1.0f, -1.0f,  +1.0f, r, g, b, 1.0f },
+		};
+
+		for (int i = 0; i < 8; i++)
+		{
+			DirectX::XMFLOAT3 V;
+			V.x = verticies[i].x;
+			V.y = verticies[i].y;
+			V.z = verticies[i].z;
+			verticiesArray.push_back(V);
+		}
+
+		D3D11_BUFFER_DESC vertexBufferDesc;
+		ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
+
+		vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		vertexBufferDesc.ByteWidth = sizeof(Vertex) * 8;
+		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		vertexBufferDesc.CPUAccessFlags = 0;
+		vertexBufferDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA vertexBufferData;
+
+		ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
+		vertexBufferData.pSysMem = verticies;
+		renderer.getDevice()->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &squareVertBuffer);
+
+		//vertex buffer
+		vertexBufferDesc = CD3D11_BUFFER_DESC(sizeof(verticies), D3D11_BIND_VERTEX_BUFFER);
+		D3D11_SUBRESOURCE_DATA vertexdata = { 0 };
+		vertexdata.pSysMem = verticies;
+
+		renderer.getDevice()->CreateBuffer(&vertexBufferDesc, &vertexdata, &vertexBuffer);
+
+		renderer.getDeviceContex()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		auto WVP_desc = CD3D11_BUFFER_DESC(sizeof(renderer.getWVP()), D3D11_BIND_CONSTANT_BUFFER);
+
+		renderer.getDevice()->CreateBuffer(&WVP_desc, nullptr, &WVP_buffer);
+
+		CreateShaders(renderer);
+	}
+}
+
+
+
+void GridSpace::UnHighlightObject(DX11Renderer & renderer)
+{
+	if (highlighted == true)
+	{
+		highlighted = false;
+
+		verticiesArray.clear();
+
+		float r = 0;
+		float g = 0;
+		float b = 1;
+
+		//most basic of geometry
+		Vertex verticies[] =
+		{
+			{ -1.0f, -1.0f, -1.0f, r, g, b, 1.0f },
+		{ -1.0f,  +1.0f, -1.0f, r, g, b, 1.0f },
+		{ +1.0f,  +1.0f, -1.0f, r, g, b, 1.0f },
+		{ +1.0f, -1.0f, -1.0f, r, g, b, 1.0f },
+		{ -1.0f, -1.0f,  +1.0f, r, g, b, 1.0f },
+		{ -1.0f,  +1.0f, +1.0f, r, g, b, 1.0f },
+		{ +1.0f,  +1.0f,  +1.0f, r, g, b, 1.0f },
+		{ +1.0f, -1.0f,  +1.0f, r, g, b, 1.0f },
+		};
+
+
+		for (int i = 0; i < 8; i++)
+		{
+			DirectX::XMFLOAT3 V;
+			V.x = verticies[i].x;
+			V.y = verticies[i].y;
+			V.z = verticies[i].z;
+			verticiesArray.push_back(V);
+		}
+
+		D3D11_BUFFER_DESC vertexBufferDesc;
+		ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
+
+		vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		vertexBufferDesc.ByteWidth = sizeof(Vertex) * 8;
+		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		vertexBufferDesc.CPUAccessFlags = 0;
+		vertexBufferDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA vertexBufferData;
+
+		ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
+		vertexBufferData.pSysMem = verticies;
+		renderer.getDevice()->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &squareVertBuffer);
+
+		//vertex buffer
+		vertexBufferDesc = CD3D11_BUFFER_DESC(sizeof(verticies), D3D11_BIND_VERTEX_BUFFER);
+		D3D11_SUBRESOURCE_DATA vertexdata = { 0 };
+		vertexdata.pSysMem = verticies;
+
+		renderer.getDevice()->CreateBuffer(&vertexBufferDesc, &vertexdata, &vertexBuffer);
+
+		renderer.getDeviceContex()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		auto WVP_desc = CD3D11_BUFFER_DESC(sizeof(renderer.getWVP()), D3D11_BIND_CONSTANT_BUFFER);
+
+		renderer.getDevice()->CreateBuffer(&WVP_desc, nullptr, &WVP_buffer);
+
+		CreateShaders(renderer);
+	}
+}

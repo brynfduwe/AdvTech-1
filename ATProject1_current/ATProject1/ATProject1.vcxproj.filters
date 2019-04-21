@@ -24,13 +24,16 @@
     <ClCompile Include="DX11Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Triangle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GridSpace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,13 +44,16 @@
     <ClInclude Include="DX11Renderer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Triangle.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Input.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="GridSpace.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
