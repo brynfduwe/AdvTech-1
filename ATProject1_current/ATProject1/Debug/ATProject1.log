@@ -1,9 +1,23 @@
-﻿  Model.cpp
-c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\model.cpp(225): warning C4018: '<': signed/unsigned mismatch
-  DX11Renderer.cpp
-  Generating Code...
-  Skipping... (no relevant changes detected)
-  Game.cpp
-  main.cpp
-  GridSpace.cpp
+﻿  main.cpp
+  c:\program files (x86)\windows kits\10\include\10.0.16299.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(41): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(141): warning C4007: 'WinMain': must be '__stdcall'
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(195): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(256): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(261): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(275): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(288): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(312): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(317): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(344): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(346): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(347): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(348): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(360): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(365): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(429): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(448): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(466): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(488): warning C4018: '<': signed/unsigned mismatch
+c:\users\bryn\documents\bryn\bryn uwe\year 3\at\at1\advtech-1\atproject1_current\atproject1\main.cpp(494): warning C4018: '<': signed/unsigned mismatch
   ATProject1.vcxproj -> C:\Users\Bryn\Documents\Bryn\Bryn UWE\Year 3\AT\AT1\AdvTech-1\ATProject1_current\Debug\ATProject1.exe

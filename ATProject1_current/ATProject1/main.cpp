@@ -301,6 +301,7 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 								//floor[i].hideObj();
 								moveToSpace = i;
 
+								//path finding
 								GridSpace startSpace = floor[0];
 								GridSpace targetSpace = floor[0];
 
@@ -328,7 +329,10 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 
 								std::vector<DirectX::XMFLOAT3> pathList;
 								std::vector<GridSpace> neighbors;
+								std::vector<GridSpace> closedList;
 								std::vector<int> stoodUpon;
+
+								std::vector<GridSpace> floorpath;
 								
 								pathList.push_back(DirectX::XMFLOAT3(startSpace.getX(), startSpace.getY(), startSpace.getZ()));
 
@@ -352,22 +356,50 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 									}
 
 									//A*
+									GridSpace lastNearSpace = nearSpace;
 									for (int i = 0; i < neighbors.size(); i++)
 									{
-										if (neighbors[i].getEndDist() < nearSpace.getEndDist())
+										bool fail = false;
+										if (closedList.size() > 0)
 										{
-											nearSpace = neighbors[i];
-											pathList.push_back(DirectX::XMFLOAT3(nearSpace.getX(), nearSpace.getY(), nearSpace.getZ()));
+											for (int j = 0; j < closedList.size(); j++)
+											{
+												if (neighbors[i].getX() == closedList[j].getX() && neighbors[i].getZ() == closedList[j].getZ())
+												{
+													fail = true;
+												}
+											}
 										}
 
-										if ((neighbors[i].getX() == floor[moveToSpace].getX() && neighbors[i].getZ() == floor[moveToSpace].getZ()) || loops > 1000)
+										if (fail == false)
 										{
-											endFound = true;
+											if (neighbors[i].getEndDist() < nearSpace.getEndDist())
+											{
+												nearSpace = neighbors[i];
+												pathList.push_back(DirectX::XMFLOAT3(nearSpace.getX(), nearSpace.getY(), nearSpace.getZ()));
+												floorpath.push_back(nearSpace);
+											}
 
-											if(loops <= 1000)
-												allObjects[selected].setStandingSpace(stoodUpon[i]);
+											if ((neighbors[i].getX() == floor[moveToSpace].getX() && neighbors[i].getZ() == floor[moveToSpace].getZ()) || loops > 1000)
+											{
+												endFound = true;
 
-											break;
+												if (loops <= 1000)
+													allObjects[selected].setStandingSpace(stoodUpon[i]);
+
+												break;
+											}
+										}
+									}
+
+									if (nearSpace.getX() == lastNearSpace.getX() && nearSpace.getZ() == lastNearSpace.getZ())
+									{
+										if (pathList.size() > 1)
+										{
+											closedList.push_back(nearSpace);
+											pathList.pop_back();
+											floorpath.pop_back();
+											nearSpace = floorpath[floorpath.size() - 1];
 										}
 									}
 
