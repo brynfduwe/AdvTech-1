@@ -10,6 +10,8 @@ class DX11Renderer
 public:
 	DX11Renderer(Window& wnd);
 	~DX11Renderer() = default;
+
+	void releaseBuffers();
 	void newFrame();
 	void endFrame();
 

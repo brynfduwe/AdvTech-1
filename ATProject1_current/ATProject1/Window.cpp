@@ -35,15 +35,14 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 Window::Window(int width, int height)
 {
-	//all set up to create a window class style
+	//window style
 	WNDCLASS wndc = { 0 };
 	wndc.style = CS_OWNDC;
-	wndc.lpfnWndProc = WinProc; // catches inputs;
+	wndc.lpfnWndProc = WinProc; //inputs;
 	wndc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wndc.lpszClassName = "AT1DX11";
 	RegisterClass(&wndc);
 
-	//create the window
 	m_handle = CreateWindow("AT1DX11",
 		"AT1 - DX11 - 15007649",
 		WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,

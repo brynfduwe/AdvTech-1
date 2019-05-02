@@ -153,6 +153,9 @@ GridSpace::~GridSpace()
 	//vertexShader->Release();
 	//pixelShader->Release();
 	//inputLayout->Release();
+	//squareIndexBuffer->Release();
+	//squareVertBuffer->Release();
+	//WVP_buffer->Release();
 }
 
 void GridSpace::CreateShaders(DX11Renderer & renderer)

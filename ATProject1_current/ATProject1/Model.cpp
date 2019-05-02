@@ -134,15 +134,15 @@ Model::~Model()
 	//vertexShader->Release();
 	//pixelShader->Release();
 	//inputLayout->Release();
+	//squareIndexBuffer->Release();
+	//squareVertBuffer->Release();
+	//WVP_buffer->Release();
 }
 
 void Model::CreateShaders(DX11Renderer & renderer)
 {
-	//loads the file
 	std::ifstream vs("TriangleVertexShader.cso", std::ios::binary);
 	std::ifstream ps("TrianglePixelShader.cso", std::ios::binary);
-
-	//iterates though file and adds bytes to vector
 	std::vector<char> vsData = { std::istreambuf_iterator<char>(vs), std::istreambuf_iterator<char>() };
 	std::vector<char> psData = { std::istreambuf_iterator<char>(ps), std::istreambuf_iterator<char>() };
 
@@ -173,17 +173,16 @@ void Model::Draw(DX11Renderer & renderer)
 
 		renderer.setRenderTargets();
 
-		//bind shaders
 		renderer.getDeviceContex()->IASetInputLayout(inputLayout);
 		renderer.getDeviceContex()->VSSetShader(vertexShader, nullptr, 0);
 		renderer.getDeviceContex()->PSSetShader(pixelShader, nullptr, 0);
 
-		//bind vertex buffer - one bind allows it to be rendered over and over, saves memory
+		//bind vertex buffer - bind saves memory by allowing re-rendering
 		UINT vStride = sizeof(Vertex);
 		UINT offset = 0;
 		renderer.getDeviceContex()->IASetVertexBuffers(0, 1, &vertexBuffer, &vStride, &offset);
 
-		//input assembler stage
+		//input assembler
 		renderer.getDeviceContex()->IASetIndexBuffer(squareIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 		renderer.getDeviceContex()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		renderer.getDeviceContex()->VSSetConstantBuffers(0, 1, &WVP_buffer);

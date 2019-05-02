@@ -13,10 +13,11 @@ void pickRay(DirectX::XMVECTOR& pickRayInWorldSpacePos, DirectX::XMVECTOR& pickR
 	DirectX::XMVECTOR pickRayInViewSpaceDir = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	DirectX::XMVECTOR pickRayInViewSpacePos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 
-	DirectX::XMFLOAT4X4 projM; // THIS NEEDS TO BE CAMPROJ ME THINKS
+	DirectX::XMFLOAT4X4 projM; // THIS NEEDS TO BE CAMPROJ possibly
 							   //convert matrix to float4x4 for picking
 	DirectX::XMStoreFloat4x4(&projM, r.getProjMatrix());
 
+	//position divided by viewport
 	float x = (((2.0f * (float)i.getMouseX()) / (float)800) - 1) / projM(0, 0);
 	float y = -(((2.0f * (float)i.getMouseY()) / (float)500) - 1) / projM(1, 1);
 
@@ -62,29 +63,23 @@ bool objRayCollisionCheck(std::vector<unsigned short> indicesArray, std::vector<
 		tri1V2 = DirectX::XMVector3TransformCoord(tri1V2, world);
 		tri1V3 = DirectX::XMVector3TransformCoord(tri1V3, world);
 
-		//Find the normal using U, V coordinates (two edges)
+		//Find the normal
 		DirectX::XMVECTOR U = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 		DirectX::XMVECTOR V = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 		DirectX::XMVECTOR faceNormal = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-
 		U = DirectX::XMVectorSubtract(tri1V2, tri1V1);
 		V = DirectX::XMVectorSubtract(tri1V3, tri1V1);
-
-		//Compute face normal by crossing U, V
 		faceNormal = DirectX::XMVector3Cross(U, V);
-
 		faceNormal = DirectX::XMVector3Normalize(faceNormal);
-
-		//Calculate a point on the triangle for the plane equation
 		DirectX::XMVECTOR triPoint = tri1V1;
 
-		//Get plane equation ("Ax + By + Cz + D = 0") Variables
+		//plane equasion
 		float tri1A = DirectX::XMVectorGetX(faceNormal);
 		float tri1B = DirectX::XMVectorGetY(faceNormal);
 		float tri1C = DirectX::XMVectorGetZ(faceNormal);
 		float tri1D = (-tri1A * DirectX::XMVectorGetX(triPoint) - tri1B * DirectX::XMVectorGetY(triPoint) - tri1C * DirectX::XMVectorGetZ(triPoint));
 
-		//Now we find where (on the ray) the ray intersects with the triangles plane
+		//intersection on plane point
 		float ep1, ep2, t = 0.0f;
 		float planeIntersectX, planeIntersectY, planeIntersectZ = 0.0f;
 		DirectX::XMVECTOR pointInPlane = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
@@ -98,26 +93,24 @@ bool objRayCollisionCheck(std::vector<unsigned short> indicesArray, std::vector<
 
 		if (t > 0.0f)
 		{
-			//Get the point on the plane
 			planeIntersectX = DirectX::XMVectorGetX(prwsPos) + DirectX::XMVectorGetX(prwsDir) * t;
 			planeIntersectY = DirectX::XMVectorGetY(prwsPos) + DirectX::XMVectorGetY(prwsDir) * t;
 			planeIntersectZ = DirectX::XMVectorGetZ(prwsPos) + DirectX::XMVectorGetZ(prwsDir) * t;
-
 			pointInPlane = DirectX::XMVectorSet(planeIntersectX, planeIntersectY, planeIntersectZ, 0.0f);
 
 			tDist = 1000;
 
-			DirectX::XMVECTOR cp1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V3, tri1V2), DirectX::XMVectorSubtract(pointInPlane, tri1V2));
-			DirectX::XMVECTOR cp2 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V3, tri1V2), DirectX::XMVectorSubtract(tri1V1, tri1V2));
-			if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(cp1, cp2)) >= 0)
+			DirectX::XMVECTOR crossproduct1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V3, tri1V2), DirectX::XMVectorSubtract(pointInPlane, tri1V2));
+			DirectX::XMVECTOR crossproduct2 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V3, tri1V2), DirectX::XMVectorSubtract(tri1V1, tri1V2));
+			if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(crossproduct1, crossproduct2)) >= 0)
 			{
-				cp1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V3, tri1V1), DirectX::XMVectorSubtract(pointInPlane, tri1V1));
-				cp2 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V3, tri1V1), DirectX::XMVectorSubtract(tri1V2, tri1V1));
-				if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(cp1, cp2)) >= 0)
+				crossproduct1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V3, tri1V1), DirectX::XMVectorSubtract(pointInPlane, tri1V1));
+				crossproduct2 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V3, tri1V1), DirectX::XMVectorSubtract(tri1V2, tri1V1));
+				if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(crossproduct1, crossproduct2)) >= 0)
 				{
-					cp1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V2, tri1V1), DirectX::XMVectorSubtract(pointInPlane, tri1V1));
-					cp2 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V2, tri1V1), DirectX::XMVectorSubtract(tri1V3, tri1V1));
-					if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(cp1, cp2)) >= 0)
+					crossproduct1 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V2, tri1V1), DirectX::XMVectorSubtract(pointInPlane, tri1V1));
+					crossproduct2 = DirectX::XMVector3Cross(DirectX::XMVectorSubtract(tri1V2, tri1V1), DirectX::XMVectorSubtract(tri1V3, tri1V1));
+					if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(crossproduct1, crossproduct2)) >= 0)
 					{
 						tDist = t / 2;
 						if (tDist < cDist)
@@ -146,6 +139,7 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 
 	std::vector<GridSpace> floor;
 
+	//level map
 	int levelLayout[] = 
 	{
 		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -499,6 +493,8 @@ int WinMain(HINSTANCE appInstance, HINSTANCE prevInstance, LPSTR cmdLine, int cm
 
 		renderer.endFrame(); 
 	}
+
+	renderer.releaseBuffers();
 
 	return 0;
 }

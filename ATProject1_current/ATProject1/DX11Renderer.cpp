@@ -13,6 +13,17 @@ struct cbPerObject
 
 cbPerObject cbPerObj;
 
+void DX11Renderer::releaseBuffers()
+{
+	SwapChain->Release();
+	Device->Release();
+	DeviceContex->Release();
+	renderTargetView->Release();
+	depthStencilView->Release();
+	depthStencilBuffer->Release();
+	cbPerObjectBuffer->Release();
+}
+
 void DX11Renderer::newFrame()
 {
 	//output merger stage
@@ -82,16 +93,16 @@ void DX11Renderer::UpdateCamPosition(float x, float y, float z)
 void DX11Renderer::CreateDevice(Window& wnd)
 {
 	//initialise directx
-	//create swap chain - back buffer - double buffering?
+	//create swap chain
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = { 0 };
-	swapChainDesc.BufferCount = 1; // 1 = double buffer, 2 = triple buffer, etc;
+	swapChainDesc.BufferCount = 1; // 1 = double buffer, 2 is triple etc
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // draw on surface
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // draw on display
 	swapChainDesc.OutputWindow = wnd.getHandle();
 	swapChainDesc.SampleDesc.Count = 1;
-	swapChainDesc.Windowed = true; // add fullscreen setting!
+	swapChainDesc.Windowed = true; // fullscreen?
 
-								   //create device and contect
+								   
 	D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0, D3D11_SDK_VERSION,
 		&swapChainDesc, &SwapChain, &Device, nullptr, &DeviceContex);
 }
@@ -119,14 +130,13 @@ void DX11Renderer::CreateRenderTarget()
 	depthStencilDesc.CPUAccessFlags = 0;
 	depthStencilDesc.MiscFlags = 0;
 
-	//Create the Depth/Stencil View
+	//Depth/Stencil View
 	Device->CreateTexture2D(&depthStencilDesc, NULL, &depthStencilBuffer);
 	Device->CreateDepthStencilView(depthStencilBuffer, NULL, &depthStencilView);
 
-	//Set our Render Target
+	//Render Target
 	DeviceContex->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
-	// Setup the viewport for rendering.
 	viewport.Width = (float)800;
 	viewport.Height = (float)500;
 	viewport.MinDepth = 0.01f;
@@ -153,10 +163,10 @@ void DX11Renderer::CreateRenderTarget()
 	camTarget = DirectX::XMVectorSet(0.0f, -10.0f, 0.0f, 0.0f);
 	camUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-	//View matrix
+	//View 
 	camView = DirectX::XMMatrixLookAtLH(camPosition, camTarget, camUp);
 
-	//Projection matrix
+	//Projection 
 	camProjection = DirectX::XMMatrixPerspectiveFovLH(0.4f * DirectX::XM_PI, (float)800 / 500, 0.01f, 1000.0f);
 	
 
